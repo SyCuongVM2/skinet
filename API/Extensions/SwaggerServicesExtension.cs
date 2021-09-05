@@ -10,6 +10,7 @@ namespace API.Extensions
     {
       services.AddSwaggerGen(c => {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+        c.CustomSchemaIds(type => $"{type.Name}_{System.Guid.NewGuid()}");
 
         var securitySchema = new OpenApiSecurityScheme
         {

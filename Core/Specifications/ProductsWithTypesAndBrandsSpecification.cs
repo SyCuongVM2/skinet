@@ -11,8 +11,8 @@ namespace Core.Specifications
         (!productParams.TypeId.HasValue || x.ProductTypeId == productParams.TypeId)
       )
     {
-      AddInclue(x => x.ProductType);
-      AddInclue(x => x.ProductBrand);
+      AddInclude(x => x.ProductType);
+      AddInclude(x => x.ProductBrand);
       AddOrderBy(x => x.Name);
       ApplyPaging(productParams.PageSize * (productParams.PageIndex - 1), productParams.PageSize);
       
@@ -35,8 +35,8 @@ namespace Core.Specifications
 
     public ProductsWithTypesAndBrandsSpecification(int id) : base(x => x.Id == id)
     {
-      AddInclue(x => x.ProductType);
-      AddInclue(x => x.ProductBrand);
+      AddInclude(x => x.ProductType);
+      AddInclude(x => x.ProductBrand);
     }
   }
 }
