@@ -9,6 +9,8 @@ using API.Middleware;
 using API.Extensions;
 using StackExchange.Redis;
 using Infrastructure.Identity;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace API
 {
@@ -25,8 +27,8 @@ namespace API
     {
       services.AddAutoMapper(typeof(MappingProfiles));
       services.AddControllers();
-      services.AddDbContext<StoreContext>(x => x.UseSqlite(_config.GetConnectionString("Default")));
-      services.AddDbContext<AppIdentityDbContext>(x => x.UseSqlite(_config.GetConnectionString("Identity")));
+      services.AddDbContext<StoreContext>(x => x.UseNpgsql(_config.GetConnectionString("Default")));
+      services.AddDbContext<AppIdentityDbContext>(x => x.UseNpgsql(_config.GetConnectionString("Identity")));
       services.AddSingleton<IConnectionMultiplexer>(_ => {
         var configuration = ConfigurationOptions.Parse(_config.GetConnectionString("Redis"), true);
         return ConnectionMultiplexer.Connect(configuration);
@@ -53,6 +55,13 @@ namespace API
       app.UseHttpsRedirection();
       app.UseRouting();
       app.UseStaticFiles();
+      app.UseStaticFiles(new StaticFileOptions 
+      {
+        FileProvider = new PhysicalFileProvider(
+          Path.Combine(Directory.GetCurrentDirectory(), "Content")
+        ),
+        RequestPath = "/content"
+      });
       app.UseCors("CorsPolicy");
       app.UseAuthentication();
       app.UseAuthorization();
@@ -60,6 +69,7 @@ namespace API
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapControllers();
+        endpoints.MapFallbackToController("Index", "Fallback");
       });
     }
   }
